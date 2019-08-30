@@ -1,5 +1,5 @@
 const tacoUrl = "http://taco-randomizer.herokuapp.com/random/?full-taco=true";
-const wikiUrl = "https://en.wikipedia.org/api/rest_v1/page/summary/";
+const tacoSection = document.getElementById('taco');
 const output = document.querySelector('.output');
 async function getJSON(url) {
   try {
@@ -9,35 +9,28 @@ async function getJSON(url) {
     throw error;
   }
 }
-async function getTaco(url) {
 
-    const tacoJSON = await getJSON(url);
-    const tacoProf = tacoJSON.map( async (tacoMap) => {
-        const tacoProfJSON = await getJSON(wikiUrl + tacoMap.name);
-        return {...tacoJSON};
-			});
-      return Promise.all(tacoProf);
+function generateHTML(tacoRecipe) {
 
-    }
-function generateHTML(data) {
-  data.map( taco => {
     const section = document.createElement('section');
-    peopleList.appendChild(section);
-		section.innerHTML = `
-		    <img src=${taco.thumbnail.source}>
-		<span>${taco.name}</span>
-		    <h2>${taco.recipe}</h2>
+    output.appendChild(section);
+
+    section.innerHTML = `
+
+		<h2 class="text-center">${tacoRecipe.name}</h2>
+		<p>${tacoRecipe.recipe}</p>
 
 		  `;
-  });
 
-	}
-	window.addEventListener('load', (event) => {
-		getTaco(tacoUrl)
-.then(generateHTML)
-.catch( e => {
-output.innerHTML = "<h3 class='text-center'>Something went wrong.</h3>";
-console.error(e);
+}
+window.addEventListener('load', (event) => {
+	output.innerHTML = "<h3 class='text-center temp'>Loading...</h3>";
+	const temp = document.querySelector(".temp");
+getJSON(tacoUrl)
+    .then(generateHTML)
+    .catch(e => {
+      output.innerHTML = "<h3 class='text-center'>Something went wrong.</h3>";
+      console.error(e);
+    })
+		.finally(temp.remove()) ;
 });
-});
-console.log();
